@@ -123,7 +123,10 @@
 
             if ( $sentencia->affected_rows>0 ) {
                 $resultado->estado = "OK";
-                $resultado->datos = "usuario creado";
+                $resultado->datos = new stdClass;
+
+                $resultado->datos->mensaje = "usuario creado: fase 1";
+                $resultado->datos->clave_pub = "$clave_pub";
             }
             else {
                 $resultado->estado = "ERROR";
@@ -132,16 +135,104 @@
 
         }
         return $resultado;
-
     }
 
-$usuario = new Usuario;
+
+    function guardarUsuarioFase2(Usuario $usuario){
+        $resultado = new Respuesta;
+        $bdd = new BaseDeDatos;
+
+        $credenciales = verCredenciales();
+
+        $bdd->iniciarConexion(
+            $credenciales[0],
+            $credenciales[1],
+            $credenciales[2],
+            $credenciales[3]
+        );
+
+        if ($bdd->estado == "OK") {
+            $consulta = 
+            "UPDATE usuario set clave
+            values (?,?,?,?)";
+            $sentencia = $bdd->conexion->prepare($consulta);
+            $nombre=$usuario->nombre;
+            $clave_pub=$usuario->clave_pub;
+            $clave_priv="null";
+            $hashContra="null";
+
+            $sentencia->bind_param("ssss",$nombre,
+                                $clave_pub, $clave_priv, $hashContra);
+            $res_sentencia=$sentencia->execute();
+
+            if ( $sentencia->affected_rows>0 ) {
+                $resultado->estado = "OK";
+                $resultado->datos = new stdClass;
+
+                $resultado->datos->mensaje = "usuario creado: fase 1";
+                $resultado->datos->clave_pub = "$clave_pub";
+            }
+            else {
+                $resultado->estado = "ERROR";
+                $resultado->datos = "ocurrió algo:".$sentencia->error;
+            }
+
+        }
+        return $resultado;
+    }
+
+
+
+
+/* --- EJECUCIÓN --- */
+
+
+//Recepción de los datos diréctamente del input
+$datos = file_get_contents('php://input');
+//print_r($datos);
+if ( ! empty($datos) ) {
+        
+
+    //Validación de los datos
+    $datosValidados = validarPost($datos);
+
+    //Decodificación de los datos: el string json se converte en un objeto genérico
+    $objetoJson = json_decode("$datosValidados");
+ 
+    //Creación de un objeto de clase Consulta para almacenar los datos específicos de la consulta
+    $usuario = new Usuario;
+    $usuario->nombre = $objetoJson->usuario->nombre;
+    $usuario->hash_contra = $objetoJson->usuario->hash_contra;
+
+   
+
+    if (is_null($usuario->hash_contra)) {
+        //print_r($usuario);
+        $respuesta = crearUsuario($usuario);
+        //print_r($respuesta);
+    }
+    //$datosConsulta->dato = $objetoJson->dato;
+
+    //$respuesta=buscarLibro("$datosConsulta->dato");
+    respuestaJSON($respuesta);
+    
+    //echo("$objetoJson->dato");
+    //print_r($datosConsulta);
+    //respuestaJSON($datosConsulta);
+}
+else {
+    accesoInadecuado();
+}
+
+
+
+/*
 $usuario->nombre="gomezete";
 
 $prueba=crearUsuario($usuario);
 print_r($prueba);
 //usuarioExiste($usuario);
-
+*/
 
 
 
