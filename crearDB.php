@@ -1,10 +1,11 @@
 <?php 
 
-    include_once "./base/basededatos.php";
+    include_once "base/basededatos.php";
     //print_r( count($_POST));
     $estado = "";
     $archivos = glob("./*.sql");
     
+    echo("$dato");
     
 
 
@@ -27,12 +28,31 @@
         }
 
         $bdd = new BaseDeDatos;
+        
         $bdd->iniciarConexion($servidor,$usuario,$pass,null);
-        $sentencia=$bdd->conexion->prepare($contenido);
-        $bdd->conexion->execute();
+        
+        if ($bdd->estado == "OK") {
+            $sentencias=explode(";","$contenido");
+            foreach ($sentencias as $sentencia) {
+                echo $sentencia;
+                echo "<br>";
+                $sentenciasql=$bdd->conexion->prepare($sentencia);
+            }
+
+            
+        } 
+        $estado="$bdd->estado - $bdd->mensaje";
+        
 
 
-        echo("$contenido");
+        $bdd->cerrarConexion();
+        
+        
+        //$bdd->conexion->execute();
+       // print_r($bdd);
+        
+
+        
     }
 
 
