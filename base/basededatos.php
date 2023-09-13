@@ -2,7 +2,7 @@
     //Para asegurarnos del correcto reporte de errores
     mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_INDEX);//MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ALL);
     
-    
+    $dato="algo";
     /** Clases para el uso de bases de datos */
     class BaseDeDatos{
         public $conexion;
