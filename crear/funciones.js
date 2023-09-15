@@ -1,5 +1,6 @@
 const formRegistro = document.getElementById("datosUsuario");
 const btnEnviar = document.getElementById("btnEnviar");
+const divEstado = document.getElementById("estado");
 
 btnEnviar.addEventListener("click",prepararDatos)
 
@@ -48,13 +49,15 @@ function enviarDatos(formulario) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(usuario)
-        }).then(res => res.json()).then(res => console.log(res))
+        })
+        .then(res => res.json())
+        .then(res => {
+            console.log(res)
+            const pEstado = document.createElement("p")
+            pEstado.innerHTML=res.Respuesta.estado+": "+res.Respuesta.datos.mensaje
+            divEstado.appendChild(pEstado)
+        })
     });
-}
-
-
-function name(params) {
-    
 }
 
 

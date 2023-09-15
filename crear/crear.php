@@ -27,7 +27,8 @@
                 $resultado = completarRegistro($usuario);
             } else {
                 $resultado->estado="ERROR";
-                $resultado->datos="Ya existe";
+                $resultado->datos=new stdClass;
+                $resultado->datos->mensaje="Ya existe";
             }
             
         }
