@@ -5,7 +5,7 @@
     $estado = "";
     $archivos = glob("./*.sql");
     
-    echo("$dato");
+    //echo("$dato");
     
 
 
@@ -34,9 +34,10 @@
         if ($bdd->estado == "OK") {
             $sentencias=explode(";","$contenido");
             foreach ($sentencias as $sentencia) {
-                echo $sentencia;
-                echo "<br>";
+               // echo $sentencia;
+                //echo "<br>";
                 $sentenciasql=$bdd->conexion->prepare($sentencia);
+                $sentenciasql->execute();
             }
 
             
