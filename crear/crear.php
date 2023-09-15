@@ -14,17 +14,33 @@
             $clave_pub=crearSal();
             
             $usuario->clave_pub="$clave_pub";
-
+            
             $resultado=guardarUsuario($usuario);
         }
         else{
-            $resultado->estado="ERROR";
-            $resultado->datos="Ya existe";
+            
+            if (registroIncompleto($usuario)) {
+                $hashContra_Base = $usuario->hash_contra;
+                $usuario->clave_priv = crearSal();
+                $hashContra = hashear($hashContra_Base,$usuario->clave_priv);
+                $usuario->hash_contra = $hashContra;
+                $resultado = completarRegistro($usuario);
+            } else {
+                $resultado->estado="ERROR";
+                $resultado->datos="Ya existe";
+            }
+            
         }
         return $resultado;
     }
 
 
+    /**
+     * Chequea si el usuario ya existe en el sistema.
+     *
+     * @param Usuario $usuario
+     * @return void
+     */
     function usuarioExiste(Usuario $usuario) {
         $resultado=false;
         
@@ -80,20 +96,28 @@
             else{
                 //$respuesta->datos = "No se encontraron resultados para la búsqueda";
             }
+            $bdd->cerrarConexion();
         }
         else {
             //$respuesta->estado=$basededatos->estado;
             //CAMBIAR ESTO PARA PRODUCCIÓN!!!!!!!
             //$respuesta->datos=$basededatos->mensaje;
+            
         }
         
-        $bdd->cerrarConexion();
+        
 
         return $resultado;
     }
 
 
 
+    /**
+     * Determina si el registro de un usuario es incompleto, para pasar a la fase 2 del registro del mismo.
+     *
+     * @param Usuario $usuario
+     * @return void
+     */
     function registroIncompleto(Usuario $usuario) {
         $resultado=false;
         
@@ -112,7 +136,7 @@
         if ($bdd->estado == "OK") {
             
             //Si la conexión es correcta, declaramos la consulta con parámetros, indicados por los símbolos de pregunta ----------\/
-            $consulta="select count(*) as conteo from usuarios.usuario where nombre like ? and clave_priv is null";
+            $consulta="select count(*) as conteo from usuarios.usuario where nombre like ? and clave_priv='null'";
 
             //Con el método 'prepare' de la conexión para declarar un objeto sentencia
             $sentencia = $bdd->conexion->prepare($consulta);
@@ -161,6 +185,14 @@
         return $resultado;
     }
 
+
+    /**
+     * Guarda los datos de la fase 1 del registro de un usuario nuevo.
+     * Se almacenan solo el nombre y se genera la clave pública.
+     *
+     * @param Usuario $usuario
+     * @return void un objeto Respuesta con la clave pública del usuario. 
+     */
     function guardarUsuario(Usuario $usuario){
         $resultado = new Respuesta;
         $bdd = new BaseDeDatos;
@@ -205,6 +237,12 @@
     }
 
 
+    /**
+     * Completa el registro del registro del usuario (fase 2)
+     *
+     * @param Usuario $usuario
+     * @return void
+     */
     function completarRegistro(Usuario $usuario){
         $resultado = new Respuesta;
         $bdd = new BaseDeDatos;
@@ -220,24 +258,23 @@
 
         if ($bdd->estado == "OK") {
             $consulta = 
-            "UPDATE usuario set clave
-            values (?,?,?,?)";
+            "UPDATE usuario set clave_priv=?, hashContra=?
+            where nombre=?";
+
             $sentencia = $bdd->conexion->prepare($consulta);
             $nombre=$usuario->nombre;
-            $clave_pub=$usuario->clave_pub;
-            $clave_priv="null";
-            $hashContra="null";
+            $clave_priv=$usuario->clave_priv;
+            $hashContra=$usuario->hash_contra;
 
-            $sentencia->bind_param("ssss",$nombre,
-                                $clave_pub, $clave_priv, $hashContra);
-            $res_sentencia=$sentencia->execute();
+            $sentencia->bind_param("sss", $clave_priv, $hashContra ,$nombre);
+            $sentencia->execute();
 
             if ( $sentencia->affected_rows>0 ) {
                 $resultado->estado = "OK";
                 $resultado->datos = new stdClass;
 
-                $resultado->datos->mensaje = "usuario creado: fase 1";
-                $resultado->datos->clave_pub = "$clave_pub";
+                $resultado->datos->mensaje = "usuario creado: fase 2";
+                
             }
             else {
                 $resultado->estado = "ERROR";
@@ -265,19 +302,20 @@ if ( ! empty($datos) ) {
 
     //Decodificación de los datos: el string json se converte en un objeto genérico
     $objetoJson = json_decode("$datosValidados");
- 
+    
+    
     //Creación de un objeto de clase Consulta para almacenar los datos específicos de la consulta
     $usuario = new Usuario;
     $usuario->nombre = $objetoJson->usuario->nombre;
-    $usuario->hash_contra = $objetoJson->usuario->hash_contra;
-
-   
-
-    if (is_null($usuario->hash_contra)) {
-        //print_r($usuario);
-        $respuesta = crearUsuario($usuario);
-        //print_r($respuesta);
+    
+    if (isset($objetoJson->usuario->hash_contra)) {
+        $usuario->hash_contra = $objetoJson->usuario->hash_contra;
     }
+    else {
+        $usuario->hash_contra = null;
+    }
+    $respuesta = crearUsuario($usuario);
+
     //$datosConsulta->dato = $objetoJson->dato;
 
     //$respuesta=buscarLibro("$datosConsulta->dato");
