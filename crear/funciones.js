@@ -1,13 +1,20 @@
+//Obtener los elementos requeridos del html
 const formRegistro = document.getElementById("datosUsuario");
 const btnEnviar = document.getElementById("btnEnviar");
 const divEstado = document.getElementById("estado");
 
+//Se agrega un eventListener
 btnEnviar.addEventListener("click",prepararDatos)
 
+//Ejecuta la función de envío de datos
 function prepararDatos() {
     enviarDatos(formRegistro)
 }
 
+/**
+ * Envía los datos del formulario mediante una solicitud al servidor
+ * @param {*} formulario 
+ */
 function enviarDatos(formulario) {
 
     let datos = {
