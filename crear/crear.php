@@ -1,10 +1,59 @@
 <?php
 
-    include_once "funciones.php";
+
+    include_once "../base/usuario_general.php";
     include_once "../credenciales/bdd.php";
     include_once "../base/basededatos.php";
     include_once "../base/index.php";
     
+
+
+    /* --- EJECUCIÓN --- */
+
+
+//1 - Recepción de los datos diréctamente del input
+$datos = file_get_contents('php://input');
+
+//2 - Si los datos recibidos no son vacíos, procedemos a validarlos
+if ( ! empty($datos) ) {
+    //Validación de los datos
+    $datosValidados = validarPost($datos);
+
+    //Decodificación de los datos: convertimos el string json en un objeto de "clase genérica"
+    $objetoJson = json_decode("$datosValidados");
+
+    //Creamos un nuevo objeto para contener los datos del usuario
+    $usuario = new Usuario;
+    
+    //Pasamos los datos del objeto genérico al objeto usuario
+    $usuario->nombre = $objetoJson->usuario->nombre;
+    
+    //Chequeamos si el objeto contiene un hash de contraseña
+    if (isset($objetoJson->usuario->hash_contra)) {
+        $usuario->hash_contra = $objetoJson->usuario->hash_contra;
+    }
+    else {
+        $usuario->hash_contra = null;
+    }
+
+    $respuesta = crearUsuario($usuario);
+
+    respuestaJSON($respuesta);
+
+}
+else {
+    accesoInadecuado();
+}
+
+/** FUNCIONES **/
+
+
+    /**
+     * Permite guiar el proceso de creación y registro de usuarios en el
+     * sistema.
+     * @param Usuario $usuario Un objeto de clase usuario con los datos de registro
+     * @return $resultado Un objeto de clase Respuesta con los datos del registro o del error
+     */
     function crearUsuario(Usuario $usuario) {
         $resultado=new Respuesta;
 
@@ -34,83 +83,6 @@
         }
         return $resultado;
     }
-
-
-    /**
-     * Chequea si el usuario ya existe en el sistema.
-     *
-     * @param Usuario $usuario
-     * @return void
-     */
-    function usuarioExiste(Usuario $usuario) {
-        $resultado=false;
-        
-        $bdd = new BaseDeDatos;
-
-        $credenciales = verCredenciales();
-
-        $bdd->iniciarConexion(
-            $credenciales[0],
-            $credenciales[1],
-            $credenciales[2],
-            $credenciales[3]
-        );
-
-        
-        if ($bdd->estado == "OK") {
-            
-            //Si la conexión es correcta, declaramos la consulta con parámetros, indicados por los símbolos de pregunta ----------\/
-            $consulta="select count(*) as conteo from usuarios.usuario where nombre like ?";
-
-            //Con el método 'prepare' de la conexión para declarar un objeto sentencia
-            $sentencia = $bdd->conexion->prepare($consulta);
-            
-            //Declaramos variables para los términos de búsqueda
-            $termino = "%"."$usuario->nombre"."%";
-            
-            //Con el método bind_param del objeto sentencia, añadimos los términos a los parámetros de la consulta 
-            $sentencia->bind_param("s",$termino);
-            //  bind_param requiere un string con caracteres que indique los tipos de los datos a agregar a los parámetros
-            //      i - int, números enteros
-            //      d - double, número con decimales
-            //      s - string, textos, fechas, otros datos semejantes
-            //      b - blob, paquetes de datos, que se envían en forma fragmentaria, en paquetes
-
-            //Ejecutamos la sentencia con el método 'execute'
-            $sentencia->execute();
-
-            //Declaramos un objeto 'resultado' para  
-            $resultadoBD= $sentencia->get_result();
-
-            if ($resultadoBD->num_rows > 0) {
-                foreach($resultadoBD as $fila){
-                    $cantUsuarios = $fila["conteo"];
-                    if ($cantUsuarios>0) {
-                        //echo("El usuario existe");
-                        $resultado=true;
-                    }
-                    //else{
-                      //  echo("El usuario no existe");
-                    //}
-                }
-            }
-            else{
-                //$respuesta->datos = "No se encontraron resultados para la búsqueda";
-            }
-            $bdd->cerrarConexion();
-        }
-        else {
-            //$respuesta->estado=$basededatos->estado;
-            //CAMBIAR ESTO PARA PRODUCCIÓN!!!!!!!
-            //$respuesta->datos=$basededatos->mensaje;
-            
-        }
-        
-        
-
-        return $resultado;
-    }
-
 
 
     /**
@@ -289,56 +261,7 @@
 
 
 
-/* --- EJECUCIÓN --- */
 
-
-//Recepción de los datos diréctamente del input
-$datos = file_get_contents('php://input');
-//print_r($datos);
-if ( ! empty($datos) ) {
-        
-
-    //Validación de los datos
-    $datosValidados = validarPost($datos);
-
-    //Decodificación de los datos: el string json se converte en un objeto genérico
-    $objetoJson = json_decode("$datosValidados");
-    
-    
-    //Creación de un objeto de clase Consulta para almacenar los datos específicos de la consulta
-    $usuario = new Usuario;
-    $usuario->nombre = $objetoJson->usuario->nombre;
-    
-    if (isset($objetoJson->usuario->hash_contra)) {
-        $usuario->hash_contra = $objetoJson->usuario->hash_contra;
-    }
-    else {
-        $usuario->hash_contra = null;
-    }
-    $respuesta = crearUsuario($usuario);
-
-    //$datosConsulta->dato = $objetoJson->dato;
-
-    //$respuesta=buscarLibro("$datosConsulta->dato");
-    respuestaJSON($respuesta);
-    
-    //echo("$objetoJson->dato");
-    //print_r($datosConsulta);
-    //respuestaJSON($datosConsulta);
-}
-else {
-    accesoInadecuado();
-}
-
-
-
-/*
-$usuario->nombre="gomezete";
-
-$prueba=crearUsuario($usuario);
-print_r($prueba);
-//usuarioExiste($usuario);
-*/
 
 
 

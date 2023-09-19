@@ -116,7 +116,9 @@
     }
 
 
-
+    /**
+     * Determina si un string es o no un JSON válido
+     */
     function esJson($dato){
         json_decode($dato);
         return (json_last_error() === JSON_ERROR_NONE);

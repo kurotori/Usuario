@@ -2,6 +2,8 @@
 const formRegistro = document.getElementById("datosUsuario");
 const btnEnviar = document.getElementById("btnEnviar");
 const divEstado = document.getElementById("estado");
+//const divDatos = document.getElementById("datos");
+//const listaP = document.getElementById("listaP")
 
 //Se agrega un eventListener
 btnEnviar.addEventListener("click",prepararDatos)
@@ -33,11 +35,13 @@ function enviarDatos(formulario) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(usuario)
-    }).then(res => res.json())
+    })
+    .then(res => res.json())
     .then(res => {
+        
         clave_pub=res.Respuesta.datos.clave_pub
         password=formulario['passUsuario'];
-        passConClave=password+'-'+clave_pub
+        passConClave= mezclarStrings(password,clave_pub)//password+'-'+clave_pub
         hashPass=generarHash(passConClave)
 
         datos={
@@ -68,20 +72,41 @@ function enviarDatos(formulario) {
 }
 
 
-
-
 /**
- * Permite generar un hash con la contraseña proporcionada por el usuario
- * @param {*} password La contraseña del usuario.
- * @returns El hash de la contraseña proporcionada.
+ * Esta función contiene elementos de ejemplo para el desarrollo de funciones similares
+ * @param {*} formulario 
  */
-function generarHash(password) {
-    //1 - Creamos un objeto de hasheo
-    var hasheador = new jsSHA("SHA-512", "TEXT", {numRounds: 1});
-    //2 - Agregamos el password al objeto de hasheo
-    hasheador.update(password);
-    //3 - Obtenemos el hash en formato hexadecimal...
-    var hash = hasheador.getHash("HEX");
-    // ...y devolvemos el mismo.
-    return hash;
+function enviarDatos2(formulario) {
+
+    let datos = {
+        nombre:formulario['nombreUsuario'].value
+    }
+
+    let usuario = {
+        usuario:datos
+    }
+    //console.log(usuario);
+
+    fetch('http://localhost:3000/crear/crear.php', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(usuario)
+    })
+    .then(res => res.json())
+    .then(res => {
+        let listado = res.Respuesta.datos
+        listado.forEach(producto => {
+            const pProducto = document.createElement("li")
+            const imgProd = document.createElement("img")
+            const divImagen = 
+            imgProd.src = "ruta/fija/"+producto.imagen
+            pProducto.classList.add("nombreClase")
+            
+            pProducto.innerText = producto.producto + " - $"+ producto.precio
+            divDatos.appendChild(listaP)
+        });
+    })
 }
