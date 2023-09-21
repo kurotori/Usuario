@@ -1,5 +1,5 @@
 <?php 
-
+include_once "../credenciales/bdd.php";
 include_once "basededatos.php";
 
 

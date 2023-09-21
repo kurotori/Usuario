@@ -27,7 +27,7 @@ function enviarDatos(formulario) {
         usuario:datos
     }
     //console.log(usuario);
-
+    
     fetch('http://localhost:3000/crear/crear.php', {
         method: 'POST',
         headers: {
