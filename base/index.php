@@ -16,18 +16,6 @@
         public $hash_contra;
     }
 
-    class UsuarioNuevo extends Usuario{
-        public $cl_publica;
-        public $hash_pass;
-    }
-
-    class UsuarioRegistrado extends Usuario{
-        public $cl_publica;
-        public $cl_privada;
-        public $hash_final;
-    }
-    
-
     class Consulta{
         public $dato;
         public $modo;

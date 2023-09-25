@@ -9,10 +9,10 @@ function ejecutarLogin() {
 
 
     const datos={
-        nombre:formDatosLogin["nombreUsuario"],
+        nombre:formDatosLogin["nombreUsuario"].value,
         pass:null
     }
-
+    console.log(datos)
     let usuario = {
         usuario:datos
     }
@@ -29,10 +29,28 @@ function ejecutarLogin() {
     .then(res => res.json())
     .then(res => {
         let estado = res.Respuesta.estado
+        
         if (estado=="ERROR") {
-            divEstado.innerText
-        } else {
-            
+            divEstado.innerText = estado + ": " + res.Respuesta.datos 
+
+        } else if (estado=="OK") {
+
+            console.log(res)
+            let clave_pub = res.Respuesta.datos.clave_pub
+            let password = formDatosLogin["passUsuario"].value
+            passConClave= mezclarStrings(password,clave_pub)
+            hashPass=generarHash(passConClave)
+
+            datos={
+                nombre:formDatosLogin['nombreUsuario'].value,
+                hash_contra:hashPass
+            }
+    
+            usuario={
+                usuario:datos
+            }
+
+
         }
     })
 

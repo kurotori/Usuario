@@ -11,6 +11,7 @@
     //2 - Si los datos recibidos NO son vacíos, procedemos a validarlos
     if ( ! empty($datos) ) {
         //Validación de los datos
+        
         $datosValidados = validarPost($datos);
 
         //Decodificación de los datos: convertimos el string json en un objeto de "clase genérica"
@@ -50,14 +51,98 @@
      */
     function login(Usuario $usuario){
         $respuesta = new Respuesta;
+
         if (usuarioExiste($usuario)) {
             $respuesta->estado="OK";
-            $respuesta->datos="El usuario existe";
+            if ($usuario->hash_contra==null) {
+               
+
+                $datos = buscarDatosUsuario($usuario);
+                $respuesta->datos=new stdClass;
+                $respuesta->datos->clave_pub = $datos->clave_pub;
+            }
+            else {
+                $respuesta->datos="parte del login";
+            }
+
         } else {
             $respuesta->estado="ERROR";
             $respuesta->datos="El usuario no existe";
         }
+
+
+        
+
+
+        
         
         return $respuesta;
+    }
+
+
+    /**
+     * Permite obtener los datos 
+     *
+     * @param Usuario $usuario
+     * @return void
+     */
+    function buscarDatosUsuario(Usuario $usuario) {
+        $datosUsuario=new Usuario;
+        
+        $bdd = new BaseDeDatos;
+
+        $credenciales = verCredenciales();
+
+        $bdd->iniciarConexion(
+            $credenciales[0],
+            $credenciales[1],
+            $credenciales[2],
+            $credenciales[3]
+        );
+
+        
+        if ($bdd->estado == "OK") {
+            
+            //Si la conexión es correcta, declaramos la consulta con parámetros, indicados por los símbolos de pregunta ----------\/
+            $consulta="select clave_pub from usuarios.usuario where nombre=?";
+
+            //Con el método 'prepare' de la conexión para declarar un objeto sentencia
+            $sentencia = $bdd->conexion->prepare($consulta);
+            
+            //Declaramos variables para los términos de búsqueda
+            $termino = $usuario->nombre;
+            
+            //Con el método bind_param del objeto sentencia, añadimos los términos a los parámetros de la consulta 
+            $sentencia->bind_param("s",$termino);
+            //  bind_param requiere un string con caracteres que indique los tipos de los datos a agregar a los parámetros
+            //      i - int, números enteros
+            //      d - double, número con decimales
+            //      s - string, textos, fechas, otros datos semejantes
+            //      b - blob, paquetes de datos, que se envían en forma fragmentaria, en paquetes
+
+            //Ejecutamos la sentencia con el método 'execute'
+            $sentencia->execute();
+
+            //Declaramos un objeto 'resultado' para  
+            $resultadoBD= $sentencia->get_result();
+
+            if ($resultadoBD->num_rows > 0) {
+                foreach($resultadoBD as $fila){
+                    $datosUsuario->clave_pub = $fila["clave_pub"];
+                }
+            }
+            else{
+                //$respuesta->datos = "No se encontraron resultados para la búsqueda";
+            }
+        }
+        else {
+            //$respuesta->estado=$basededatos->estado;
+            //CAMBIAR ESTO PARA PRODUCCIÓN!!!!!!!
+            //$respuesta->datos=$basededatos->mensaje;
+        }
+        
+        $bdd->cerrarConexion();
+
+        return $datosUsuario;
     }
  ?>
