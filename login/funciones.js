@@ -8,25 +8,17 @@ btnLogin.addEventListener("click",ejecutarLogin)
 function ejecutarLogin() {
 
 
-    const datos={
+    let datos={
         nombre:formDatosLogin["nombreUsuario"].value,
         pass:null
     }
-    console.log(datos)
+    
     let usuario = {
         usuario:datos
     }
     //console.log(usuario);
     
-    fetch('http://localhost:3000/login/login.php', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(usuario)
-    })
-    .then(res => res.json())
+    enviarAlServidor(usuario)
     .then(res => {
         let estado = res.Respuesta.estado
         
@@ -40,6 +32,7 @@ function ejecutarLogin() {
             let password = formDatosLogin["passUsuario"].value
             passConClave= mezclarStrings(password,clave_pub)
             hashPass=generarHash(passConClave)
+            console.log(hashPass)
 
             datos={
                 nombre:formDatosLogin['nombreUsuario'].value,
@@ -50,8 +43,28 @@ function ejecutarLogin() {
                 usuario:datos
             }
 
+            enviarAlServidor(usuario)
+            .then(res=>{
+                console.log(res.Respuesta)
+            })
+
 
         }
     })
 
+}
+
+
+
+async function enviarAlServidor(usuario) {
+    resultado = await fetch('http://localhost:3000/login/login.php', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+        },
+    body: JSON.stringify(usuario)
+    })
+    .then(res => res.json())
+    return await resultado
 }

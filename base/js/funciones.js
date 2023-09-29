@@ -37,7 +37,8 @@ function mezclarStrings(string1, string2) {
 
     for (let index = 0; index < long; index++) {
         resultado += string1[index]+string2[index]
-    } console.log(resultado)
+    } 
+    //console.log(resultado)
     resultado+=complemento
     return resultado
 }

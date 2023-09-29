@@ -1,0 +1,27 @@
+body,html{
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    background-color: cornflowerblue;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.fila{
+    width: 100%;
+}
+
+.columna{
+    position: relative;
+    height: 100%;
+    float: left;
+}
+
+.Centrado1Tercio{
+    position: relative;
+    width: calc(100% / 3);
+    left: calc(100% / 3 );
+}
+
+.relleno3en1{
+    padding: 5% 0% 5%;
+}
