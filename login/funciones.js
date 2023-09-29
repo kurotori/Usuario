@@ -68,3 +68,11 @@ async function enviarAlServidor(usuario) {
     .then(res => res.json())
     return await resultado
 }
+
+async function obtenerIp() {
+    return await fetch("https://api.ipify.org?format=json")
+}
+
+async function verIp() {
+    return await obtenerIp.then(res => {console.log(res)})
+}
