@@ -6,7 +6,7 @@ btnLogin.addEventListener("click",ejecutarLogin)
 
 
 function ejecutarLogin() {
-
+    divEstado.innerText=""
 
     let datos={
         nombre:formDatosLogin["nombreUsuario"].value,
@@ -30,18 +30,15 @@ function ejecutarLogin() {
             console.log(res)
             let clave_pub = res.Respuesta.datos.clave_pub
             let password = formDatosLogin["passUsuario"].value
+
             passConClave= mezclarStrings(password,clave_pub)
             hashPass=generarHash(passConClave)
             console.log(hashPass)
 
-            datos={
-                nombre:formDatosLogin['nombreUsuario'].value,
-                hash_contra:hashPass
-            }
-    
-            usuario={
-                usuario:datos
-            }
+            datos.nombre=formDatosLogin['nombreUsuario'].value
+            datos.hash_contra=hashPass
+            
+            usuario.usuario=datos
 
             enviarAlServidor(usuario)
             .then(res=>{

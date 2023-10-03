@@ -5,7 +5,7 @@ create table usuarios.usuario(
     nombre varchar(25) not null unique,
     clave_pub varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci default null,
     clave_priv varchar(100) default null,
-    hashContra varchar(120) default null,
+    hashContra varchar(200) default null,
     primary key (nombre)
 );
 
@@ -57,14 +57,14 @@ BEGIN
 
     /* 5 - Ingreso las consultas del procedimiento,
      vinculándolas a los parámetros*/
-    insert into usuario.sesion() values();
+    insert into usuarios.sesion() values();
     
     /* 6 - Para pasar datos a una variable auxilar puedo usar el
      comando "select [valor/variable/expresión] into variable" 
      o el comando "set variable = [valor/variable/expresión]"*/    
     select last_insert_id() into nueva_sesion_id;
     
-    insert into usuario.inicia(usuario_nombre, sesion_id)
+    insert into usuarios.inicia(usuario_nombre, sesion_id)
     values(usuario_nom, nueva_sesion_id);
 
     /* 7 - Para entregar datos tras la ejecución, puedo utilizar

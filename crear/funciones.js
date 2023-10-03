@@ -27,41 +27,18 @@ function enviarDatos(formulario) {
         usuario:datos
     }
     //console.log(usuario);
-    
-    fetch('http://localhost:3000/crear/crear.php', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(usuario)
-    })
-    .then(res => res.json())
+    enviarAlServidor(usuario)
     .then(res => {
-        
         clave_pub=res.Respuesta.datos.clave_pub
         password=formulario['passUsuario'];
         passConClave= mezclarStrings(password,clave_pub)//password+'-'+clave_pub
         hashPass=generarHash(passConClave)
 
-        datos={
-            nombre:formulario['nombreUsuario'].value,
-            hash_contra:hashPass
-        }
+        datos.nombre=formulario['nombreUsuario'].value
+        datos.hash_contra=hashPass
+        usuario.usuario=datos
 
-        usuario={
-            usuario:datos
-        }
-
-        fetch('http://localhost:3000/crear/crear.php', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(usuario)
-        })
-        .then(res => res.json())
+        enviarAlServidor(usuario)
         .then(res => {
             console.log(res)
             const pEstado = document.createElement("p")
@@ -69,6 +46,20 @@ function enviarDatos(formulario) {
             divEstado.appendChild(pEstado)
         })
     });
+}
+
+
+async function enviarAlServidor(usuario) {
+    resultado = await fetch('http://localhost:3000/crear/crear.php', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+        },
+    body: JSON.stringify(usuario)
+    })
+    .then(res => res.json())
+    return await resultado
 }
 
 
