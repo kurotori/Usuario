@@ -26,6 +26,7 @@
         //Chequeamos si el objeto contiene un hash de contraseña
         if (isset($objetoJson->usuario->hash_contra)) {
             $usuario->hash_contra = $objetoJson->usuario->hash_contra;
+
         }
         else {
             $usuario->hash_contra = null;
@@ -54,15 +55,31 @@
 
         if (usuarioExiste($usuario)) {
             $respuesta->estado="OK";
-            if ($usuario->hash_contra==null) {
-               
+            $datosUsuario = buscarDatosUsuario($usuario);
 
-                $datos = buscarDatosUsuario($usuario);
-                $respuesta->datos=new stdClass;
-                $respuesta->datos->clave_pub = $datos->clave_pub;
+            $respuesta->datos=new stdClass;
+
+            if ($usuario->hash_contra==null) {
+        
+                $respuesta->datos->clave_pub = $datosUsuario->clave_pub;
             }
             else {
-                $respuesta->datos="parte del login";
+                //$usuario->hash_contra;  -->Viene del frontend
+                //$datosUsuario->clave_priv  --> de BDD
+                //$datosUsuario->hash_contra --> de BDD
+                $hash_contra_usuario = hashear($usuario->hash_contra,$datosUsuario->clave_priv);
+                //echo($hash_contra_usuario);
+                $respuesta->datos->cp=$datosUsuario->clave_priv;
+                $respuesta->datos->hasheo=$hash_contra_usuario;
+                $respuesta->datos->hash_contra=$datosUsuario->hash_contra;
+                $respuesta->datos->hc_enviado=$usuario->hash_contra;
+                /*if ( strstr($datosUsuario->hash_contra,$hash_contra_usuario) ) {
+                    $respuesta->datos->id_sesion = loguearUsuario($usuario);
+                } else {
+                    $respuesta->estado="ERROR";
+                    $respuesta->datos="Contraseña Incorrecta";
+                }*/
+                
             }
 
         } else {
@@ -70,12 +87,6 @@
             $respuesta->datos="El usuario no existe";
         }
 
-
-        
-
-
-        
-        
         return $respuesta;
     }
 
@@ -104,8 +115,8 @@
         if ($bdd->estado == "OK") {
             
             //Si la conexión es correcta, declaramos la consulta con parámetros, indicados por los símbolos de pregunta ----------\/
-            $consulta="select clave_pub from usuarios.usuario where nombre=?";
-
+            $consulta="select clave_pub,clave_priv,hashContra from usuarios.usuario where nombre=?";
+            
             //Con el método 'prepare' de la conexión para declarar un objeto sentencia
             $sentencia = $bdd->conexion->prepare($consulta);
             
@@ -129,6 +140,8 @@
             if ($resultadoBD->num_rows > 0) {
                 foreach($resultadoBD as $fila){
                     $datosUsuario->clave_pub = $fila["clave_pub"];
+                    $datosUsuario->clave_priv = $fila["clave_priv"];
+                    $datosUsuario->hash_contra = $fila["hashContra"];
                 }
             }
             else{
@@ -144,5 +157,49 @@
         $bdd->cerrarConexion();
 
         return $datosUsuario;
+    }
+
+
+
+    /**
+     * Crea una sesión, la asocia al nombre de usuario y retorna el ID de dicha sesión
+     */
+    function loguearUsuario(Usuario $usuario){
+        $respuesta=0;
+        
+        $bdd = new BaseDeDatos;
+
+        $credenciales = verCredenciales();
+
+        $bdd->iniciarConexion(
+            $credenciales[0],
+            $credenciales[1],
+            $credenciales[2],
+            $credenciales[3]
+        );
+
+        
+        if ($bdd->estado == "OK") {
+            $consulta="call iniciar_sesion(?)";
+            $sentencia = $bdd->conexion->prepare($consulta);
+            $termino = $usuario->nombre;
+            $sentencia->bind_param("s",$termino);
+
+            $sentencia->execute();
+
+            //Declaramos un objeto 'resultado' para  
+            $resultadoBD= $sentencia->get_result();
+
+            if ($resultadoBD->num_rows > 0) {
+                foreach($resultadoBD as $fila){
+                    $respuesta = $fila["id_sesion"];
+                }
+            }
+        }
+        
+        $bdd->cerrarConexion();
+
+        return $respuesta;
+
     }
  ?>

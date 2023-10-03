@@ -69,8 +69,9 @@ else {
         else{
             
             if (registroIncompleto($usuario)) {
-                $hashContra_Base = $usuario->hash_contra;
+                $hashContra_Base = $usuario->hash_contra; //--> Viene del Frontend
                 $usuario->clave_priv = crearSal();
+
                 $hashContra = hashear($hashContra_Base,$usuario->clave_priv);
                 $usuario->hash_contra = $hashContra;
                 $resultado = completarRegistro($usuario);
@@ -138,9 +139,6 @@ else {
                         //echo("El usuario existe");
                         $resultado=true;
                     }
-                    //else{
-                      //  echo("El usuario no existe");
-                    //}
                 }
             }
             else{

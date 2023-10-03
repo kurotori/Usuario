@@ -26,9 +26,10 @@ function crearSal(){
  */
 function hashear($dato,$sal){
     $texto="$dato"."$sal";
-    $limiteOp = SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE;
-    $limiteMem = SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE;
-    $hash=sodium_crypto_pwhash_str($texto,$limiteOp,$limiteMem);
+    //$limiteOp = SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE;
+    //$limiteMem = SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE;
+    //$hash=sodium_crypto_pwhash_str($texto,$limiteOp,$limiteMem);
+    $hash = hash("sha512", $texto);
     return $hash;
 }
 
