@@ -8,12 +8,12 @@ btnLogin.addEventListener("click",ejecutarLogin)
 function ejecutarLogin() {
 
 
-    let datos={
+    const datos={
         nombre:formDatosLogin["nombreUsuario"].value,
         pass:null
     }
     
-    let usuario = {
+    const usuario = {
         usuario:datos
     }
     //console.log(usuario);
@@ -34,14 +34,10 @@ function ejecutarLogin() {
             hashPass=generarHash(passConClave)
             console.log(hashPass)
 
-            datos={
-                nombre:formDatosLogin['nombreUsuario'].value,
-                hash_contra:hashPass
-            }
+            datos.nombre=formDatosLogin['nombreUsuario'].value
+            datos.hash_contra=hashPass
     
-            usuario={
-                usuario:datos
-            }
+            usuario.usuario=datos
 
             enviarAlServidor(usuario)
             .then(res=>{
@@ -70,9 +66,11 @@ async function enviarAlServidor(usuario) {
 }
 
 async function obtenerIp() {
-    return await fetch("https://api.ipify.org?format=json")
+    respuesta=await fetch("https://api.ipify.org?format=json")
+    .then(res => res.json())
+    .then(res => {return res})
 }
 
 async function verIp() {
-    return await obtenerIp.then(res => {console.log(res)})
+    return obtenerIp()
 }
