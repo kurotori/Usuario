@@ -11,6 +11,8 @@
     /* --- EJECUCIÓN --- */
 
 
+
+   //echo(hashear("algo","otro"));
 //1 - Recepción de los datos diréctamente del input
 $datos = file_get_contents('php://input');
 
@@ -56,10 +58,10 @@ else {
      */
     function crearUsuario(Usuario $usuario) {
         $resultado=new Respuesta;
-
-        $chequeo=usuarioExiste($usuario);
+        $resultado->datos=new stdClass;
+        //$chequeo=;
         
-        if ( ! $chequeo ) {
+        if ( ! usuarioExiste($usuario) ) {
             $clave_pub=crearSal();
             
             $usuario->clave_pub="$clave_pub";
@@ -69,7 +71,9 @@ else {
         else{
             
             if (registroIncompleto($usuario)) {
+               // $resultado->datos->recibido=$usuario->hash_contra;
                 $hashContra_Base = $usuario->hash_contra; //--> Viene del Frontend
+                //echo("---> $hashContra_Base");
                 $usuario->clave_priv = crearSal();
 
                 $hashContra = hashear($hashContra_Base,$usuario->clave_priv);
@@ -77,7 +81,7 @@ else {
                 $resultado = completarRegistro($usuario);
             } else {
                 $resultado->estado="ERROR";
-                $resultado->datos=new stdClass;
+               
                 $resultado->datos->mensaje="Ya existe";
             }
             
@@ -245,6 +249,7 @@ else {
                 $resultado->datos = new stdClass;
 
                 $resultado->datos->mensaje = "usuario creado: fase 2";
+                $resultado->datos->usuario = $usuario;
                 
             }
             else {

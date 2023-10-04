@@ -30,7 +30,11 @@ function enviarDatos(formulario) {
     enviarAlServidor(usuario)
     .then(res => {
         clave_pub=res.Respuesta.datos.clave_pub
-        password=formulario['passUsuario'];
+        password=formulario['passUsuario'].value;
+
+        console.log("clave_pub:"+clave_pub)
+        
+
         passConClave= mezclarStrings(password,clave_pub)//password+'-'+clave_pub
         hashPass=generarHash(passConClave)
 

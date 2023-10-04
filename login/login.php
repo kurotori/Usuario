@@ -67,18 +67,23 @@
                 //$usuario->hash_contra;  -->Viene del frontend
                 //$datosUsuario->clave_priv  --> de BDD
                 //$datosUsuario->hash_contra --> de BDD
-                $hash_contra_usuario = hashear($usuario->hash_contra,$datosUsuario->clave_priv);
+
+                $hash_contra_usuario = hashear($usuario->hash_contra, $datosUsuario->clave_priv);
                 //echo($hash_contra_usuario);
-                $respuesta->datos->cp=$datosUsuario->clave_priv;
-                $respuesta->datos->hasheo=$hash_contra_usuario;
-                $respuesta->datos->hash_contra=$datosUsuario->hash_contra;
-                $respuesta->datos->hc_enviado=$usuario->hash_contra;
-                /*if ( strstr($datosUsuario->hash_contra,$hash_contra_usuario) ) {
+                ////$respuesta->datos->cp=$datosUsuario->clave_priv;
+                //$respuesta->datos->hash_contra_usuario = $hash_contra_usuario;
+                //$respuesta->datos->hash_contra = $datosUsuario->hash_contra;
+                
+                //$respuesta->datos->hc_enviado=$usuario->hash_contra;
+
+                if ( strstr($datosUsuario->hash_contra,$hash_contra_usuario) ) {
+                    $respuesta->estado="OK";
+                    //$respuesta->datos->R="Contraseña Correcta";
                     $respuesta->datos->id_sesion = loguearUsuario($usuario);
                 } else {
                     $respuesta->estado="ERROR";
-                    $respuesta->datos="Contraseña Incorrecta";
-                }*/
+                    $respuesta->datos-> mensaje="Contraseña Incorrecta";
+                }
                 
             }
 

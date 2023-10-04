@@ -27,13 +27,14 @@ function ejecutarLogin() {
 
         } else if (estado=="OK") {
 
-            console.log(res)
+            //console.log(res)
             let clave_pub = res.Respuesta.datos.clave_pub
             let password = formDatosLogin["passUsuario"].value
 
             passConClave= mezclarStrings(password,clave_pub)
             hashPass=generarHash(passConClave)
-            console.log(hashPass)
+            
+            //console.log(hashPass)
 
             datos.nombre=formDatosLogin['nombreUsuario'].value
             datos.hash_contra=hashPass
@@ -43,6 +44,14 @@ function ejecutarLogin() {
             enviarAlServidor(usuario)
             .then(res=>{
                 console.log(res.Respuesta)
+                if (res.Respuesta.estado=="ERROR") {
+                    divEstado.innerText = res.Respuesta.estado + ": " + res.Respuesta.datos.mensaje
+                } 
+                else if(res.Respuesta.estado=="OK") {
+                    crearCookie("usuario",datos.nombre,1)
+                    crearCookie("sesion",res.Respuesta.datos.id_sesion,1)
+                    divEstado.innerText = "Hola, "+datos.nombre
+                }
             })
 
 
@@ -75,3 +84,4 @@ async function obtenerIp() {
 async function verIp() {
     return obtenerIp()
 }
+

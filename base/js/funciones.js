@@ -42,3 +42,35 @@ function mezclarStrings(string1, string2) {
     resultado+=complemento
     return resultado
 }
+
+
+/**
+ * Crea una cookie con el nombre, valor, y caducidad especificados
+ * @param {0} nombre nombre de la cookie
+ * @param {*} valor valor asignado a la cookie
+ * @param {*} caducidad_minutos tiempo en minutos en que la cookie caducará
+ */
+function crearCookie(nombre, valor, caducidad_minutos) {
+    const d = new Date();
+    d.setTime(d.getTime() + (caducidad_minutos*60*1000));
+    let expira = "expires="+ d.toUTCString();
+    document.cookie = nombre + "=" + valor + ";" + expira + ";path=/;SameSite=None; Secure";
+  }
+
+
+  function verCookie(nombre) {
+    let nombreC = nombre + "=";
+    let cookieDecodificada = decodeURIComponent(document.cookie);
+    let listaCookies = cookieDecodificada.split(';');
+
+    for(let i = 0; i <listaCookies.length; i++) {
+      let c = listaCookies[i];
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1);
+      }
+      if (c.indexOf(nombreC) == 0) {
+        return c.substring(nombreC.length, c.length);
+      }
+    }
+    return "";
+  }
