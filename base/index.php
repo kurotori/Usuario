@@ -23,6 +23,12 @@
         //public $sesion;
     }
 
+    class Sesion{
+        public $estado;
+        public $fecha;
+        public $fecha_cad;
+    }
+
     /** Funciones */
 
 

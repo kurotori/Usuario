@@ -12,7 +12,7 @@
     create table usuarios.sesion(
         id INT not null unique auto_increment primary key,
         fecha timestamp not null default CURRENT_TIMESTAMP,
-        fecha_cad timestamp not null default date_add(current_timestamp, interval 1 minute),
+        fecha_cad timestamp not null default date_add(current_timestamp, interval 30 minute),
         estado enum('abierta','cerrada') not null default 'abierta'
     );
 
@@ -55,6 +55,7 @@
         /* 4 - Al comienzo del procedimiento declaro cualquier variable
         inicial que precise para la ejecución del mismo*/
         declare nueva_sesion_id int;
+        call cerrar_sesiones(usuario_nom);
 
         /* 5 - Ingreso las consultas del procedimiento,
         vinculándolas a los parámetros*/
@@ -78,3 +79,22 @@
 
 
     /*select count(*) from usuario where nombre="???????"*/
+
+    delimiter //
+
+    drop procedure if exists usuarios.cerrar_sesiones//
+
+    create procedure usuarios.cerrar_sesiones(
+        /* ...y sus datos de entrada (parámetros) */
+        IN usuario_nom varchar(25)
+    )
+    BEGIN
+        update usuarios.sesion
+        set estado='cerrada'
+        where id in
+        (select sesion_id from usuarios.inicia
+        where usuario_nombre=usuario_nom);
+        
+    END//
+
+    delimiter ;
