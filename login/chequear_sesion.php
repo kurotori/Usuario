@@ -25,18 +25,10 @@
         
         //Pasamos los datos del objeto genérico a los objetos correspondientes
         $usuario->nombre = $objetoJson->usuario->nombre;
-        $
+        $sesion->id = $$objetoJson->sesion->id;
         
-        //Chequeamos si el objeto contiene un hash de contraseña
-        if (isset($objetoJson->usuario->hash_contra)) {
-            $usuario->hash_contra = $objetoJson->usuario->hash_contra;
 
-        }
-        else {
-            $usuario->hash_contra = null;
-        }
-
-        $respuesta = login($usuario);
+        $respuesta = chequearSesion($usuario,$sesion);
 
         respuestaJSON($respuesta);
 
@@ -46,6 +38,10 @@
     }
 
     /** Funciones **/
+    function chequearSesion(Usuario $usuario, Sesion $sesion){
+        $respuesta = new Respuesta;
 
+        return $respuesta;
+    }
 
 ?>

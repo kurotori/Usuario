@@ -98,3 +98,37 @@
     END//
 
     delimiter ;
+
+    delimiter //
+    drop procedure if exists usuarios.validar_sesion//
+
+    create procedure usuarios.validar_sesion(
+        IN usuario_nom varchar(25),
+        IN sesion_idnum int
+    )
+    BEGIN
+        declare cant_sesiones int;
+
+        select count(*)
+        from usuarios.sesion
+        where 
+        id=sesion_idnum and
+        estado="abierta" and
+        fecha_cad > CURRENT_TIMESTAMP and
+        id in
+        (select sesion_id from usuarios.inicia
+        where usuario_nombre=usuario_nom)
+        into cant_sesiones;
+
+        update usuarios.sesion
+        set 
+        estado = if(cant_sesiones>0, 'abierta', 'cerrada'),
+        fecha_cad = if(cant_sesiones>0, 
+            date_add(current_timestamp, interval 30 minute),
+            CURRENT_TIMESTAMP)
+        where id=sesion_idnum; 
+
+        select cant_sesiones;
+    END//
+
+    delimiter ;

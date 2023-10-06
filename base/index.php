@@ -24,6 +24,7 @@
     }
 
     class Sesion{
+        public $id;
         public $estado;
         public $fecha;
         public $fecha_cad;
