@@ -2,6 +2,10 @@ const formDatosLogin = document.getElementById("datosLogin")
 const btnLogin = document.getElementById("btnLogin")
 const divEstado = document.getElementById("estado")
 
+const urlLogin = 'http://localhost:3000/login/login.php'
+const urlValidarSesion = 'http://localhost:3000/login/validar_sesion.php'
+
+
 btnLogin.addEventListener("click",ejecutarLogin)
 
 
@@ -18,7 +22,7 @@ function ejecutarLogin() {
     }
     //console.log(usuario);
     
-    enviarAlServidor(usuario)
+    enviarAlServidor(usuario,urlLogin)
     .then(res => {
         let estado = res.Respuesta.estado
         
@@ -41,15 +45,15 @@ function ejecutarLogin() {
             
             usuario.usuario=datos
 
-            enviarAlServidor(usuario)
+            enviarAlServidor(usuario,urlLogin )
             .then(res=>{
                 console.log(res.Respuesta)
                 if (res.Respuesta.estado=="ERROR") {
                     divEstado.innerText = res.Respuesta.estado + ": " + res.Respuesta.datos.mensaje
                 } 
                 else if(res.Respuesta.estado=="OK") {
-                    crearCookie("usuario",datos.nombre,1)
-                    crearCookie("sesion",res.Respuesta.datos.id_sesion,1)
+                    crearCookie("usuario",datos.nombre,30)
+                    crearCookie("sesion",res.Respuesta.datos.id_sesion,30)
                     divEstado.innerText = "Hola, "+datos.nombre
                 }
             })
@@ -60,10 +64,13 @@ function ejecutarLogin() {
 
 }
 
+function validarSesion() {
+    
+}
 
 
-async function enviarAlServidor(usuario) {
-    resultado = await fetch('http://localhost:3000/login/login.php', {
+async function enviarAlServidor(usuario,url) {
+    resultado = await fetch(url, { //'http://localhost:3000/login/login.php', {
     method: 'POST',
     headers: {
         'Accept': 'application/json, text/plain, */*',
