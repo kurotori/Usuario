@@ -3,7 +3,6 @@ const btnLogin = document.getElementById("btnLogin")
 const divEstado = document.getElementById("estado")
 
 const urlLogin = 'http://localhost:3000/login/login.php'
-const urlValidarSesion = 'http://localhost:3000/login/validar_sesion.php'
 
 
 btnLogin.addEventListener("click",ejecutarLogin)
@@ -64,23 +63,6 @@ function ejecutarLogin() {
 
 }
 
-function validarSesion() {
-    
-}
-
-
-async function enviarAlServidor(usuario,url) {
-    resultado = await fetch(url, { //'http://localhost:3000/login/login.php', {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-        },
-    body: JSON.stringify(usuario)
-    })
-    .then(res => res.json())
-    return await resultado
-}
 
 async function obtenerIp() {
     respuesta=await fetch("https://api.ipify.org?format=json")

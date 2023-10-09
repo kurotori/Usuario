@@ -7,9 +7,10 @@
 
     /** EJECUCIÓN**/
 
+
     //1 - Recepción de los datos diréctamente del input
     $datos = file_get_contents('php://input');
-
+    
     //2 - Si los datos recibidos NO son vacíos, procedemos a validarlos
     if ( ! empty($datos) ) {
         //Validación de los datos
@@ -18,14 +19,14 @@
 
         //Decodificación de los datos: convertimos el string json en un objeto de "clase genérica"
         $objetoJson = json_decode("$datosValidados");
-
+        //print_r($objetoJson);
         //Creamos un nuevo objeto para contener los datos de la sesion y del usuario
         $usuario = new Usuario;
         $sesion = new Sesion;
         
         //Pasamos los datos del objeto genérico a los objetos correspondientes
         $usuario->nombre = $objetoJson->usuario->nombre;
-        $sesion->id = $$objetoJson->sesion->id;
+        $sesion->id = $objetoJson->sesion->id;
         
 
         $respuesta = validarSesion($usuario,$sesion);
@@ -83,7 +84,16 @@
                 $respuesta->datos = new stdClass; 
                 foreach($resultadoBD as $fila){
                     $sesiones_validas = $fila['cant_sesiones'];
-                    $respuesta->datos->sesiones=$sesiones_validas;
+                    
+                    if ($sesiones_validas==1) {
+                        $respuesta->estado="OK";
+                        $respuesta->datos->mensaje="Sesión Válida: $termino2 de $termino1";
+                    }
+                    else {
+                        $respuesta->estado="ERROR";
+                        $respuesta->datos->mensaje="Sesión NO Válida";
+                    }
+                    //$respuesta->datos->sesiones=$sesiones_validas;
                 }
             }
             else{

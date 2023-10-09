@@ -1,5 +1,5 @@
 
-
+const urlValidarSesion = 'http://localhost:3000/login/validar_sesion.php'
 
 
 /**
@@ -74,3 +74,56 @@ function crearCookie(nombre, valor, caducidad_minutos) {
     }
     return "";
   }
+
+  function borrarCookie(nombre) {
+    document.cookie = nombre + "=;expires='Thu, 01 Jan 1970 00:00:00 UTC';path=/;SameSite=None; Secure";
+  }
+
+  /**
+   * Valida la sesion con el servidor
+   * @returns la respuesta del servidor 
+   */
+  function validarSesion() {
+    const usuario={
+        nombre:verCookie("usuario")
+    }
+    
+    const sesion = {
+        id:verCookie("sesion")
+    }
+
+    const datos={
+        sesion:sesion,
+        usuario:usuario
+    }
+
+    enviarAlServidor(datos,urlValidarSesion)
+    .then(res=>{
+      console.log(res)
+      if (res.Respuesta.estado == "OK") {
+        crearCookie("usuario",usuario.nombre,30)
+        crearCookie("sesion",sesion.id,30)
+        return true
+      } else {
+        borrarCookie("usuario")
+        borrarCookie("sesion")
+        return false
+      }
+    })
+
+    
+}
+
+
+async function enviarAlServidor(datos,url) {
+    resultado = await fetch(url, { //'http://localhost:3000/login/login.php', {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+        },
+    body: JSON.stringify(datos)
+    })
+    .then(res => res.json())
+    return await resultado
+}
