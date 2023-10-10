@@ -2,10 +2,21 @@ const formDatosLogin = document.getElementById("datosLogin")
 const btnLogin = document.getElementById("btnLogin")
 const divEstado = document.getElementById("estado")
 
+const divInicioSesion = document.getElementById("inicioSesion")
+const divCerrarSesion = document.getElementById("cerrarSesion")
+
 const urlLogin = 'http://localhost:3000/login/login.php'
 
 
 btnLogin.addEventListener("click",ejecutarLogin)
+
+/**
+ * Ejecuta una función una vez que se carga toda la página
+ */
+document.addEventListener("DOMContentLoaded", function(event) { 
+    verificarLogin()
+  });
+/** */  
 
 
 function ejecutarLogin() {
@@ -54,6 +65,7 @@ function ejecutarLogin() {
                     crearCookie("usuario",datos.nombre,30)
                     crearCookie("sesion",res.Respuesta.datos.id_sesion,30)
                     divEstado.innerText = "Hola, "+datos.nombre
+                    location.reload()
                 }
             })
 
@@ -63,6 +75,30 @@ function ejecutarLogin() {
 
 }
 
+async function verificarLogin() {
+    respuesta = await validarSesion()
+    .then(()=>{
+        console.log(verCookie("usuario").length)
+        if(verCookie("usuario").length > 0) {
+            divCerrarSesion.style.display="block"
+            divInicioSesion.style.display="none"
+        } else {
+            divCerrarSesion.style.display="none"
+            divInicioSesion.style.display="block"
+        }
+    }
+    )
+    /*.then(res => {
+        console.log(res)
+        if (res.Respuesta.estado=="OK") {
+            divCerrarSesion.style.display="block"
+            divInicioSesion.style.display="none"
+        } else {
+            divCerrarSesion.style.display="none"
+            divInicioSesion.style.display="block"
+        }
+    })*/
+}
 
 async function obtenerIp() {
     respuesta=await fetch("https://api.ipify.org?format=json")

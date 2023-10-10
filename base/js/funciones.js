@@ -58,6 +58,11 @@ function crearCookie(nombre, valor, caducidad_minutos) {
   }
 
 
+  /**
+   * Permite obtener el contenido de una cookie mediante su nombre
+   * @param {*} nombre el nombre de la cookie
+   * @returns el valor de la cookie
+   */
   function verCookie(nombre) {
     let nombreC = nombre + "=";
     let cookieDecodificada = decodeURIComponent(document.cookie);
@@ -75,15 +80,20 @@ function crearCookie(nombre, valor, caducidad_minutos) {
     return "";
   }
 
+  /**
+   * Fuerza la caducidad de una cookie
+   * @param {*} nombre 
+   */
   function borrarCookie(nombre) {
-    document.cookie = nombre + "=;expires='Thu, 01 Jan 1970 00:00:00 UTC';path=/;SameSite=None; Secure";
+    let valor = verCookie(nombre)
+    document.cookie = nombre + "="+valor+";expires='Thu, 01 Jan 1970 00:00:00 UTC';path=/;SameSite=None; Secure";
   }
 
   /**
    * Valida la sesion con el servidor
    * @returns la respuesta del servidor 
    */
-  function validarSesion() {
+  async function validarSesion() {
     const usuario={
         nombre:verCookie("usuario")
     }
@@ -99,19 +109,43 @@ function crearCookie(nombre, valor, caducidad_minutos) {
 
     enviarAlServidor(datos,urlValidarSesion)
     .then(res=>{
-      console.log(res)
+      //console.log(res)
       if (res.Respuesta.estado == "OK") {
         crearCookie("usuario",usuario.nombre,30)
         crearCookie("sesion",sesion.id,30)
-        return true
+        
       } else {
         borrarCookie("usuario")
         borrarCookie("sesion")
-        return false
+        
       }
+      //return res
     })
+}
 
-    
+async function cerrarSesion(params) {
+  const usuario={
+    nombre:verCookie("usuario")
+  }
+
+  const datos={
+    usuario:usuario
+  }
+
+  enviarAlServidor(datos,urlValidarSesion)
+  .then(res=>{
+    //console.log(res)
+    if (res.Respuesta.estado == "OK") {
+      crearCookie("usuario",usuario.nombre,30)
+      crearCookie("sesion",sesion.id,30)
+      
+    } else {
+      borrarCookie("usuario")
+      borrarCookie("sesion")
+      
+    }
+  //return res
+})
 }
 
 
