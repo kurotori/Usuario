@@ -1,6 +1,7 @@
 
 const urlValidarSesion = 'http://localhost:3000/login/validar_sesion.php'
-
+const urlLogin = 'http://localhost:3000/login/login.php'
+const urlLogout = 'http://localhost:3000/login/logout.php'
 
 /**
  * Permite generar un hash con la contraseña proporcionada por el usuario
@@ -55,6 +56,8 @@ function crearCookie(nombre, valor, caducidad_minutos) {
     d.setTime(d.getTime() + (caducidad_minutos*60*1000));
     let expira = "expires="+ d.toUTCString();
     document.cookie = nombre + "=" + valor + ";" + expira + ";path=/;SameSite=None; Secure";
+
+    //"nombre=valor;expires=....;path=/"
   }
 
 
@@ -114,16 +117,25 @@ function crearCookie(nombre, valor, caducidad_minutos) {
         crearCookie("usuario",usuario.nombre,30)
         crearCookie("sesion",sesion.id,30)
         
-      } else {
+      } else if (
+        (verCookie("usuario").length > 0)&&
+        (verCookie("sesion").length > 0)
+      ) {
         borrarCookie("usuario")
         borrarCookie("sesion")
-        
+        location.reload()
       }
+        
       //return res
     })
 }
 
-async function cerrarSesion(params) {
+
+/**
+ * Solicita al servidor el cierre de la sesión del usuario y borra las cookies
+ * @param {*} params 
+ */
+async function cerrarSesion() {
   const usuario={
     nombre:verCookie("usuario")
   }
@@ -132,18 +144,18 @@ async function cerrarSesion(params) {
     usuario:usuario
   }
 
-  enviarAlServidor(datos,urlValidarSesion)
+  enviarAlServidor(datos,urlLogout)
   .then(res=>{
     //console.log(res)
     if (res.Respuesta.estado == "OK") {
-      crearCookie("usuario",usuario.nombre,30)
-      crearCookie("sesion",sesion.id,30)
-      
+      alert("Se ha cerrado la sesión")
     } else {
-      borrarCookie("usuario")
-      borrarCookie("sesion")
       
+      alert("Ha ocurrido un error")
     }
+    borrarCookie("usuario")
+    borrarCookie("sesion")
+    location.reload()
   //return res
 })
 }

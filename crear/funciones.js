@@ -52,7 +52,11 @@ function enviarDatos(formulario) {
     });
 }
 
-
+/**
+ * Envia datos al servidor
+ * @param {*} usuario 
+ * @returns 
+ */
 async function enviarAlServidor(usuario) {
     resultado = await fetch('http://localhost:3000/crear/crear.php', {
     method: 'POST',

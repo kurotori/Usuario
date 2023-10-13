@@ -1,14 +1,15 @@
 const formDatosLogin = document.getElementById("datosLogin")
 const btnLogin = document.getElementById("btnLogin")
+const btnLogout = document.getElementById("btnLogout")
 const divEstado = document.getElementById("estado")
 
 const divInicioSesion = document.getElementById("inicioSesion")
 const divCerrarSesion = document.getElementById("cerrarSesion")
 
-const urlLogin = 'http://localhost:3000/login/login.php'
 
 
 btnLogin.addEventListener("click",ejecutarLogin)
+btnLogout.addEventListener("click",cerrarSesion)
 
 /**
  * Ejecuta una función una vez que se carga toda la página
@@ -18,7 +19,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
   });
 /** */  
 
-
+/**
+ * Ejecuta el proceso de inicio de sesión
+ */
 function ejecutarLogin() {
     divEstado.innerText=""
 
@@ -68,18 +71,18 @@ function ejecutarLogin() {
                     location.reload()
                 }
             })
-
-
         }
     })
-
 }
 
+/**
+ * Verifica si existe una sesión en las cookies y valida las mismas con el servidor
+ */
 async function verificarLogin() {
     respuesta = await validarSesion()
     .then(()=>{
-        console.log(verCookie("usuario").length)
-        if(verCookie("usuario").length > 0) {
+        //console.log(verCookie("usuario").length)
+        if((verCookie("usuario").length > 0)&&(verCookie("sesion").length > 0)) {
             divCerrarSesion.style.display="block"
             divInicioSesion.style.display="none"
         } else {
@@ -88,17 +91,9 @@ async function verificarLogin() {
         }
     }
     )
-    /*.then(res => {
-        console.log(res)
-        if (res.Respuesta.estado=="OK") {
-            divCerrarSesion.style.display="block"
-            divInicioSesion.style.display="none"
-        } else {
-            divCerrarSesion.style.display="none"
-            divInicioSesion.style.display="block"
-        }
-    })*/
 }
+
+
 
 async function obtenerIp() {
     respuesta=await fetch("https://api.ipify.org?format=json")
