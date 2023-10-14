@@ -5,7 +5,7 @@ const divEstado = document.getElementById("estado")
 
 const divInicioSesion = document.getElementById("inicioSesion")
 const divCerrarSesion = document.getElementById("cerrarSesion")
-
+const divMsgBienvenida = document.getElementById("msgBienvenida")
 
 
 btnLogin.addEventListener("click",ejecutarLogin)
@@ -81,11 +81,18 @@ function ejecutarLogin() {
 async function verificarLogin() {
     respuesta = await validarSesion()
     .then(()=>{
-        //console.log(verCookie("usuario").length)
+        
+        //Tras la validación de la sesión, chequeamos si las cookies aún contienen datos
+        
         if((verCookie("usuario").length > 0)&&(verCookie("sesion").length > 0)) {
+            //Se aplican los cambios necesarios para reflejar la sesión...
             divCerrarSesion.style.display="block"
             divInicioSesion.style.display="none"
+            const h2Bienvenida = document.createElement("h2")
+            h2Bienvenida.innerText = "Hola, "+verCookie("usuario")
+            divMsgBienvenida.appendChild(h2Bienvenida)
         } else {
+            //...o la ausencia de la misma
             divCerrarSesion.style.display="none"
             divInicioSesion.style.display="block"
         }

@@ -4,19 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="../base/estilo_general.css">
+    <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-    <form id="datosUsuario">
-        <label for="nombreUsuario">Nombre de usuario:</label>
-        <input type="text" name="nombreUsuario" id="nombreUsuario">
-        <br>
-        <label for="passUsuario">Contraseña de usuario:</label>
-        <input type="text" name="passUsuario" id="passUsuario">
-        <br>
-    </form>
-    <button id="btnEnviar">Registrarse</button>
-    <div id="estado">
-        
+
+    <div class="columna" id="contenido">
+        <div class="fila baseForm" id="inicioSesion">
+            <div class="fila titulo">
+                <h1>Registrar Usuario</h1>
+            </div>
+            <div class="fila">
+
+                <form id="datosUsuario">
+
+                    <table>
+                        <tr>
+                            <td>
+                                <label for="nombreUsuario">Nombre de Usuario:</label>
+                            </td>
+                            <td>
+                                <input type="text" id="nombreUsuario">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="passUsuario">Contraseña:</label>
+                            </td>
+                            <td>
+                                <input type="password" id="passUsuario">
+                            </td>
+                        </tr>
+                    </table>
+
+                </form>
+                <button id="btnEnviar">Registrarse</button>
+                <div id="estado">
+                    
+                </div>
+            </div>
+        </div>
     </div>
 </body>
     <script src="../base/js/sha512.js"></script>

@@ -92,6 +92,8 @@ function crearCookie(nombre, valor, caducidad_minutos) {
     document.cookie = nombre + "="+valor+";expires='Thu, 01 Jan 1970 00:00:00 UTC';path=/;SameSite=None; Secure";
   }
 
+
+
   /**
    * Valida la sesion con el servidor
    * @returns la respuesta del servidor 
@@ -129,6 +131,7 @@ function crearCookie(nombre, valor, caducidad_minutos) {
       //return res
     })
 }
+
 
 
 /**

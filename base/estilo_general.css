@@ -25,3 +25,15 @@ body,html{
 .relleno3en1{
     padding: 5% 0% 5%;
 }
+
+.baseForm{
+    position: relative;
+    height: 75%;
+    top: 12.5%;
+    border-radius: 30px;
+    background-color: white;
+    text-align: center;
+}
+.titulo{
+    text-align: center;
+}

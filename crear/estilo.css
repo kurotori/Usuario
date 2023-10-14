@@ -1,0 +1,11 @@
+#contenido{
+    width: 50%;
+    position: relative;
+    left: 25%;
+}
+
+#datosUsuario table{
+    width: 90%;
+    position: relative;
+    left: 5%;
+}
